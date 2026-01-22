@@ -1,0 +1,42 @@
+name: Yael Transfer Baslat
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_link:
+        description: 'Kaynak Link (Topic Linki)'
+        required: true
+      dest_link:
+        description: 'Hedef Link (Topic Linki)'
+        required: true
+      offset_id:
+        description: 'Kacinci Mesajdan Baslasin? (Bastan ise 0)'
+        required: true
+        default: '0'
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350 # 6 saat dolmadan hemen önce durur
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Python Kuruluyor
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+        
+    - name: Kutuphaneler Yukleniyor
+      run: |
+        pip install pyrogram tgcrypto
+        
+    - name: Transfer Basliyor
+      env:
+        API_ID: ${{ secrets.API_ID }}
+        API_HASH: ${{ secrets.API_HASH }}
+        SESSION_STRING: ${{ secrets.SESSION_STRING }}
+        SOURCE_LINK: ${{ github.event.inputs.source_link }}
+        DEST_LINK: ${{ github.event.inputs.dest_link }}
+        OFFSET_ID: ${{ github.event.inputs.offset_id }}
+      run: python main.py
